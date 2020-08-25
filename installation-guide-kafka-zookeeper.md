@@ -13,6 +13,11 @@ Assume you have installed Java JDK and it will be in environment variable `JAVA_
 > clientPort=2181
 > EOF
 # export JAVA_HOME=/usr/lib/jvm/default-java
+#
+```
+
+**How to start Zookeper**
+```
 # /usr/local/zookeeper/bin/zkServer.sh start
 
 JMX enabled by default
@@ -27,6 +32,7 @@ To assure that your zookepeer able to run as a standalone server, we will do `te
 
 ```
 # telnet localhost 2181
+
 Trying ::1...
 Connected to localhost.
 Escape character is '^]'.
@@ -45,21 +51,32 @@ Connection closed by foreign host.
 ```
 
 # Installation of Kafka Broker
+This installation of kafka broker will store its configuration in `/usr/local/kafka` and its log in `/tmp/kafka-logs`
+
 ```
 # tar -zxf kafka_2.11-0.9.0.1.tgz
 # mv kafka_2.11-0.9.0.1 /usr/local/kafka
 # mkdir /tmp/kafka-logs
-# export JAVA_HOME=/usr/java/jdk1.8.0_51
-# /usr/local/kafka/bin/kafka-server-start.sh -daemon /usr/local/kafka/config/server.properties
+# export JAVA_HOME=/usr/lib/jvm/default-java
 #
 ```
+
+**How to Start Kafka Broker**
+```
+# /usr/local/kafka/bin/kafka-server-start.sh -daemon /usr/local/kafka/config/server.properties
+```
+
+**Create and verify topic in Kafka**
 
 ```
 # /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181
 --replication-factor 1 --partitions 1 --topic test
+
 Created topic "test".
+
 # /usr/local/kafka/bin/kafka-topics.sh --zookeeper localhost:2181
 --describe --topic test
+
 Topic:test
 PartitionCount:1
 ReplicationFactor:1
@@ -70,4 +87,23 @@ Leader: 0
 Replicas: 0
 Isr: 0
 #
+```
+
+**Produce message to kafka topic**
+```
+# /usr/local/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+> hello
+> eeeee
+> test
+^D
+```
+
+**Consume message from kafka topic**
+```
+# /usr/local/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+
+hello
+eeeee
+test
+^CProcessed a total of 3 messages
 ```
